@@ -1,0 +1,110 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "mobile-mega-menu/mega-menu",
+	"version": "1.0.0",
+	"title": "Mega Menu",
+	"category": "design",
+	"parent": [
+		"core/navigation",
+		"core/navigation-submenu"
+	],
+	"icon": "menu",
+	"description": "A navigation menu item that contains a mega menu layout.",
+	"attributes": {
+		"label": {
+			"type": "string",
+			"role": "content"
+		},
+		"url": {
+			"type": "string"
+		},
+		"opensInNewTab": {
+			"type": "boolean",
+			"default": false
+		},
+		"rel": {
+			"type": "string"
+		},
+		"title": {
+			"type": "string"
+		},
+		"description": {
+			"type": "string"
+		},
+		"type": {
+			"type": "string"
+		},
+		"kind": {
+			"type": "string"
+		},
+		"id": {
+			"type": "number"
+		},
+		"isTopLevelItem": {
+			"type": "boolean"
+		},
+		"anchor": {
+			"type": "string"
+		}
+	},
+	"usesContext": [
+		"textColor",
+		"customTextColor",
+		"backgroundColor",
+		"customBackgroundColor",
+		"overlayTextColor",
+		"customOverlayTextColor",
+		"overlayBackgroundColor",
+		"customOverlayBackgroundColor",
+		"fontSize",
+		"customFontSize",
+		"showSubmenuIcon",
+		"openSubmenusOnClick",
+		"style"
+	],
+	"supports": {
+		"html": false,
+		"reusable": false,
+		"anchor": true,
+		"align": [
+			"wide",
+			"full"
+		],
+		"color": {
+			"gradients": true,
+			"link": true,
+			"text": true,
+			"background": true,
+			"__experimentalDefaultControls": {
+				"text": true,
+				"background": true
+			}
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true,
+			"__experimentalFontFamily": true,
+			"__experimentalFontWeight": true,
+			"__experimentalFontStyle": true,
+			"__experimentalTextTransform": true,
+			"__experimentalTextDecoration": true,
+			"__experimentalLetterSpacing": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true
+			}
+		},
+		"spacing": {
+			"blockGap": true,
+			"margin": true,
+			"padding": true,
+			"__experimentalDefaultControls": {
+				"margin": true,
+				"padding": true
+			}
+		}
+	},
+	"textdomain": "mobile-mega-menu",
+	"editorScript": "file:./index.js",
+	"style": "file:./index.css"
+}

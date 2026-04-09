@@ -1,0 +1,20 @@
+{
+  "name": "mobile-mega-menu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "wp-scripts build --webpack-copy-php && wp-scripts build-blocks-manifest",
+    "start": "wp-scripts start --webpack-copy-php",
+    "dev": "wp-scripts start --webpack-copy-php",
+    "build:js": "wp-scripts build --webpack-copy-php && wp-scripts build-blocks-manifest",
+    "start:js": "wp-scripts start --webpack-copy-php"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@wordpress/icons": "^12.1.0",
+    "@wordpress/scripts": "^31.8.0"
+  }
+}
