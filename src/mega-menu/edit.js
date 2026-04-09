@@ -346,10 +346,14 @@ export default function Edit( { attributes, setAttributes } ) {
 	const viewUrl = isViewableUrl && url.startsWith( '/' ) && homeUrl ? homeUrl + url : url;
 
 	const { templateParts } = useSelect( ( select ) => {
-		return {
-			templateParts: select( coreStore ).getEntityRecords( 'postType', 'wp_template_part', { per_page: -1 } ) || [],
-		};
-	}, [] );
+    // We pass the 'area' query parameter to the REST API call
+    return {
+        templateParts: select( coreStore ).getEntityRecords( 'postType', 'wp_template_part', {
+            per_page: -1,
+            area: 'mega-menu' // Replace 'mega-menu' with the actual slug you registered
+        } ) || [],
+    };
+}, [] );
 
 	const templateOptions = [
 		{ label: __( 'None', 'mobile-mega-menu' ), value: '' },
