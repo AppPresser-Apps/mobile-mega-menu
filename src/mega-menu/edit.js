@@ -8,7 +8,8 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
-	CheckboxControl,
+  CheckboxControl,
+	SelectControl,
 	TextControl,
 	TextareaControl,
 	ToolbarButton,
@@ -327,7 +328,8 @@ export default function Edit( { attributes, setAttributes } ) {
 		title,
 		type,
 		kind,
-		id,
+    id,
+		customMenuSlug,
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -342,6 +344,20 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const isViewableUrl = !! url && ! url.startsWith( '#' ) && ! url.startsWith( './' );
 	const viewUrl = isViewableUrl && url.startsWith( '/' ) && homeUrl ? homeUrl + url : url;
+
+	const { templateParts } = useSelect( ( select ) => {
+		return {
+			templateParts: select( coreStore ).getEntityRecords( 'postType', 'wp_template_part', { per_page: -1 } ) || [],
+		};
+	}, [] );
+
+	const templateOptions = [
+		{ label: __( 'None', 'mobile-mega-menu' ), value: '' },
+		...templateParts.map( ( part ) => ( {
+			label: part.title?.rendered || part.slug,
+			value: part.slug,
+		} ) ),
+  ];
 
 	const handleLinkChange = ( nextValue ) => {
 		setAttributes( {
@@ -486,6 +502,21 @@ export default function Edit( { attributes, setAttributes } ) {
 							onChange={ ( val ) => setAttributes( { rel: val } ) }
 							autoComplete="off"
 							help={ __( 'The relationship of the linked URL as space-separated link types.', 'mobile-mega-menu' ) }
+						/>
+          </ToolsPanelItem>
+
+        		{ /* Template Part */ }
+					<ToolsPanelItem
+						hasValue={ () => !! customMenuSlug }
+						label={ __( 'Template Part', 'mobile-mega-menu' ) }
+						onDeselect={ () => setAttributes( { customMenuSlug: '' } ) }
+						isShownByDefault
+					>
+						<SelectControl
+							label={ __( 'Mega Menu Template', 'mobile-mega-menu' ) }
+							value={ customMenuSlug || '' }
+							options={ templateOptions }
+							onChange={ ( val ) => setAttributes( { customMenuSlug: val } ) }
 						/>
 					</ToolsPanelItem>
 				</ToolsPanel>
