@@ -49,6 +49,22 @@ return array(
 			),
 			'anchor' => array(
 				'type' => 'string'
+			),
+			'customMenuSlug' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'customMenuBreakpointEnabled' => array(
+				'type' => 'boolean',
+				'default' => false
+			),
+			'customMenuBreakpoint' => array(
+				'type' => 'number',
+				'default' => 600
+			),
+			'customMenuBackgroundColor' => array(
+				'type' => 'string',
+				'default' => ''
 			)
 		),
 		'usesContext' => array(

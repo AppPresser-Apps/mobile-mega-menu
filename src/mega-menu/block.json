@@ -46,6 +46,22 @@
 		},
 		"anchor": {
 			"type": "string"
+		},
+		"customMenuSlug": {
+			"type": "string",
+			"default": ""
+		},
+		"customMenuBreakpointEnabled": {
+			"type": "boolean",
+			"default": false
+		},
+		"customMenuBreakpoint": {
+			"type": "number",
+			"default": 600
+		},
+		"customMenuBackgroundColor": {
+			"type": "string",
+			"default": ""
 		}
 	},
 	"usesContext": [
