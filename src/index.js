@@ -1,3 +1,4 @@
+import { registerBlockType } from '@wordpress/blocks';
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { InspectorControls } from '@wordpress/block-editor';
@@ -176,3 +177,13 @@ function addNavigationAttributes(settings, name) {
 }
 
 addFilter('blocks.registerBlockType', 'mobile-mega-menu/add-navigation-attributes', addNavigationAttributes);
+
+
+registerBlockType('mobile-mega-menu/mega-menu-holder', {
+    title: 'Mega Menu Holder',
+    category: 'layout',
+    edit: () => <div style={{ padding: '20px', border: '2px dashed #ccc', textAlign: 'center' }}>
+        Mega Menu Display Area (Place at bottom of Header)
+    </div>,
+    save: () => <div id="global-mega-menu-holder" className="mega-menu-holder" style={{ display: 'none' }}></div>
+});

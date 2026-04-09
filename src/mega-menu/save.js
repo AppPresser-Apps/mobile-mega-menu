@@ -7,11 +7,16 @@ export default function save( { attributes } ) {
 		url,
 		opensInNewTab,
 		rel,
-		title
+		title,
+		customMenuSlug, // Extract the slug
+		customMenuBackgroundColor // Extract background if needed
 	} = attributes;
 
 	const blockProps = useBlockProps.save( {
-		className: 'wp-block-navigation-item has-child wp-block-navigation-submenu'
+		className: `wp-block-navigation-item has-child wp-block-navigation-submenu ${ customMenuSlug ? 'has-mega-menu' : '' }`,
+		// Add data attributes for the frontend script to read
+		'data-mega-slug': customMenuSlug || undefined,
+		'data-mega-bg': customMenuBackgroundColor || undefined,
 	} );
 
 	const relAttributes = [];

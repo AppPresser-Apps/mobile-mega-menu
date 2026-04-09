@@ -14,13 +14,6 @@ import {
 	ToolbarButton,
 	ToolbarGroup,
 	Spinner,
-	SelectControl,
-	ToggleControl,
-	RangeControl,
-	PanelBody,
-	BaseControl,
-	ColorPalette,
-	__experimentalDivider as Divider,
 	__experimentalToolsPanel as ToolsPanel,
 	__experimentalToolsPanelItem as ToolsPanelItem,
 } from '@wordpress/components';
@@ -29,7 +22,6 @@ import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useRef, useEffect } from '@wordpress/element';
 import { link as linkIcon, external, edit as editIcon, page, category, tag } from '@wordpress/icons';
-import ServerSideRender from '@wordpress/server-side-render';
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
@@ -336,14 +328,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		type,
 		kind,
 		id,
-		customMenuSlug,
-		customMenuBreakpointEnabled,
-		customMenuBreakpoint,
-		customMenuBackgroundColor,
 	} = attributes;
-
-	// 1. Add state to track mouse hover
-	const [ isHovered, setIsHovered ] = useState( false );
 
 	const blockProps = useBlockProps( {
 		className: 'wp-block-navigation-item has-child wp-block-navigation-submenu',
@@ -354,26 +339,6 @@ export default function Edit( { attributes, setAttributes } ) {
 			select( coreStore ).getEntityRecord( 'root', '__unstableBase' )?.home,
 		[]
 	);
-
-	const templateParts = useSelect( ( select ) => {
-		return select( coreStore ).getEntityRecords(
-			'postType', 'wp_template_part', { per_page: -1 }
-		) || [];
-	}, [] );
-
-	// 2. Fetch the active theme slug (required for ServerSideRender of template parts)
-	const activeTheme = useSelect(
-		( select ) => select( coreStore ).getCurrentTheme()?.stylesheet,
-		[]
-	);
-
-	const templateOptions = [
-		{ label: __( 'None', 'mobile-mega-menu' ), value: '' },
-		...templateParts.map( ( part ) => ( {
-			label: part.title?.rendered || part.slug,
-			value: part.slug,
-		} ) ),
-	];
 
 	const isViewableUrl = !! url && ! url.startsWith( '#' ) && ! url.startsWith( './' );
 	const viewUrl = isViewableUrl && url.startsWith( '/' ) && homeUrl ? homeUrl + url : url;
@@ -394,15 +359,139 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	return (
 		<>
-			{/* ... Keep your existing BlockControls and InspectorControls exactly as they are ... */}
+			<BlockControls group="block">
+				<ToolbarGroup>
+					<ToolbarButton
+						icon={ linkIcon }
+						title={ __( 'Link', 'mobile-mega-menu' ) }
+						isPressed={ !! url }
+					/>
+				</ToolbarGroup>
+			</BlockControls>
 
-			{/* 3. Attach mouse events to the list item */}
-			<li
-				{ ...blockProps }
-				onMouseEnter={ () => setIsHovered( true ) }
-				onMouseLeave={ () => setIsHovered( false ) }
-				style={ { ...blockProps.style, position: 'relative' } }
-			>
+			<InspectorControls>
+				<ToolsPanel
+					label={ __( 'Settings', 'mobile-mega-menu' ) }
+					resetAll={ () => setAttributes( {
+						label: '', url: '', description: '', rel: '',
+						opensInNewTab: false, id: undefined, type: undefined, kind: undefined,
+					} ) }
+				>
+					{ /* Text */ }
+					<ToolsPanelItem
+						hasValue={ () => !! label }
+						label={ __( 'Text', 'mobile-mega-menu' ) }
+						onDeselect={ () => setAttributes( { label: '' } ) }
+						isShownByDefault
+					>
+						<TextControl
+							__next40pxDefaultSize
+							label={ __( 'Text', 'mobile-mega-menu' ) }
+							value={ label || '' }
+							onChange={ ( val ) => setAttributes( { label: val } ) }
+							autoComplete="off"
+						/>
+					</ToolsPanelItem>
+
+					{ /* Link */ }
+					<ToolsPanelItem
+						hasValue={ () => !! url }
+						label={ __( 'Link', 'mobile-mega-menu' ) }
+						onDeselect={ handleLinkRemove }
+						isShownByDefault
+					>
+						<div style={ { width: '100%', boxSizing: 'border-box' } }>
+							<p style={ {
+								fontSize:      '11px',
+								fontWeight:    500,
+								textTransform: 'uppercase',
+								marginBottom:  '8px',
+								marginTop:     0,
+							} }>
+								{ __( 'LINK', 'mobile-mega-menu' ) }
+							</p>
+							<MiniLinkPicker
+								value={ { url, opensInNewTab, title, type, kind, id } }
+								onChange={ handleLinkChange }
+								onRemove={ handleLinkRemove }
+							/>
+							{ url && (
+								<p style={ {
+									fontSize:   '12px',
+									color:      '#757575',
+									marginTop:  '8px',
+									marginBottom: 0,
+								} }>
+									{ __( 'Synced with the selected page.', 'mobile-mega-menu' ) }
+								</p>
+							) }
+						</div>
+					</ToolsPanelItem>
+
+					{ /* Open in new tab */ }
+					<ToolsPanelItem
+						hasValue={ () => !! opensInNewTab }
+						label={ __( 'Open in new tab', 'mobile-mega-menu' ) }
+						onDeselect={ () => setAttributes( { opensInNewTab: false } ) }
+						isShownByDefault
+					>
+						<CheckboxControl
+							label={ __( 'Open in new tab', 'mobile-mega-menu' ) }
+							checked={ opensInNewTab }
+							onChange={ ( val ) => setAttributes( { opensInNewTab: val } ) }
+						/>
+					</ToolsPanelItem>
+
+					{ /* View button */ }
+					{ isViewableUrl && (
+						<Button
+							variant="secondary"
+							href={ viewUrl }
+							target="_blank"
+							icon={ external }
+							iconPosition="right"
+							__next40pxDefaultSize
+							className="navigation-link-to__action-button"
+						>
+							{ __( 'View', 'mobile-mega-menu' ) }
+						</Button>
+					) }
+
+					{ /* Description */ }
+					<ToolsPanelItem
+						hasValue={ () => !! description }
+						label={ __( 'Description', 'mobile-mega-menu' ) }
+						onDeselect={ () => setAttributes( { description: '' } ) }
+						isShownByDefault
+					>
+						<TextareaControl
+							label={ __( 'Description', 'mobile-mega-menu' ) }
+							value={ description || '' }
+							onChange={ ( val ) => setAttributes( { description: val } ) }
+							help={ __( 'The description will be displayed in the menu if the current theme supports it.', 'mobile-mega-menu' ) }
+						/>
+					</ToolsPanelItem>
+
+					{ /* Rel */ }
+					<ToolsPanelItem
+						hasValue={ () => !! rel }
+						label={ __( 'Rel attribute', 'mobile-mega-menu' ) }
+						onDeselect={ () => setAttributes( { rel: '' } ) }
+						isShownByDefault
+					>
+						<TextControl
+							__next40pxDefaultSize
+							label={ __( 'Rel attribute', 'mobile-mega-menu' ) }
+							value={ rel || '' }
+							onChange={ ( val ) => setAttributes( { rel: val } ) }
+							autoComplete="off"
+							help={ __( 'The relationship of the linked URL as space-separated link types.', 'mobile-mega-menu' ) }
+						/>
+					</ToolsPanelItem>
+				</ToolsPanel>
+			</InspectorControls>
+
+			<li { ...blockProps }>
 				<div className="wp-block-navigation-item__content">
 					<RichText
 						tagName="span"
@@ -423,42 +512,9 @@ export default function Edit( { attributes, setAttributes } ) {
 						<path d="M1.50002 4L6.00002 8L10.5 4" stroke="currentColor" strokeWidth="1.5"></path>
 					</svg>
 				</button>
-
 				<ul className="wp-block-navigation__submenu-container">
 					<InnerBlocks renderAppender={ InnerBlocks.ButtonBlockAppender } />
 				</ul>
-
-				{/* 4. Render the Template Part Preview on hover */}
-				{ isHovered && customMenuSlug && activeTheme && (
-					<div
-						className="mega-menu-editor-preview"
-						style={ {
-							position: 'absolute',
-							top: '100%',
-							left: 0,
-							zIndex: 100000,
-							minWidth: '600px', // Adjust this width as needed for your layout
-							backgroundColor: customMenuBackgroundColor || '#ffffff',
-							border: '1px solid #ccc',
-							boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-							padding: '20px',
-							cursor: 'default'
-						} }
-					>
-						<ServerSideRender
-							block="core/template-part"
-							attributes={ {
-								slug: customMenuSlug,
-								theme: activeTheme,
-							} }
-							LoadingResponsePlaceholder={ () => (
-								<div style={{ padding: '20px', textAlign: 'center' }}>
-									<Spinner />
-								</div>
-							) }
-						/>
-					</div>
-				) }
 			</li>
 		</>
 	);
