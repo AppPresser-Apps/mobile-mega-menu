@@ -13,7 +13,7 @@ return array(
 			'core/navigation-submenu'
 		),
 		'icon' => 'menu',
-		'description' => 'A navigation menu item that contains a mega menu layout.',
+		'description' => 'A navigation menu item that opens a mega menu layout.',
 		'attributes' => array(
 			'label' => array(
 				'type' => 'string',
@@ -125,6 +125,7 @@ return array(
 		),
 		'textdomain' => 'mobile-mega-menu',
 		'editorScript' => 'file:./index.js',
+		'viewScript' => 'file:./view.js',
 		'style' => 'file:./index.css'
 	)
 );

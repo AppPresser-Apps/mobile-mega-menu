@@ -371,7 +371,20 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const handleLinkRemove = () => {
 		setAttributes( { url: undefined, id: undefined, type: undefined, kind: undefined } );
-	};
+  };
+
+	const handleMouseEnter = () => {
+    if (!customMenuSlug) return;
+
+    // Dispatch event for the editor preview
+    const event = new CustomEvent('wp-mega-menu-preview', {
+        detail: {
+            slug: customMenuSlug,
+            backgroundColor: customMenuBackgroundColor
+        }
+    });
+    window.dispatchEvent(event);
+};
 
 	return (
 		<>
@@ -522,7 +535,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				</ToolsPanel>
 			</InspectorControls>
 
-			<li { ...blockProps }>
+			<li { ...blockProps } onMouseEnter={handleMouseEnter}>
 				<div className="wp-block-navigation-item__content">
 					<RichText
 						tagName="span"

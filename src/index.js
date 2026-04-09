@@ -178,12 +178,24 @@ function addNavigationAttributes(settings, name) {
 
 addFilter('blocks.registerBlockType', 'mobile-mega-menu/add-navigation-attributes', addNavigationAttributes);
 
-
 registerBlockType('mobile-mega-menu/mega-menu-holder', {
     title: 'Mega Menu Holder',
+    icon: 'layout',
     category: 'layout',
-    edit: () => <div style={{ padding: '20px', border: '2px dashed #ccc', textAlign: 'center' }}>
-        Mega Menu Display Area (Place at bottom of Header)
-    </div>,
-    save: () => <div id="global-mega-menu-holder" className="mega-menu-holder" style={{ display: 'none' }}></div>
+    attributes: {}, // You can add attributes here if you want to control width/padding
+    edit: () => (
+        <div style={{
+            padding: '40px 20px',
+            border: '2px dashed #007cba',
+            backgroundColor: '#f0f7ff',
+            textAlign: 'center',
+            borderRadius: '4px',
+            color: '#007cba',
+            fontWeight: '600'
+        }}>
+            { /* This is what you see in the Site Editor */ }
+            Mega Menu Holder (Templates will render here on hover)
+        </div>
+    ),
+    save: () => null, // Crucial: This allows the PHP render_callback to work
 });
