@@ -56,7 +56,7 @@ const OverlayInjector = ({ slug }) => {
 const MobileMenuPanel = ({ attributes, setAttributes }) => {
     const { templateParts } = useSelect((select) => {
         return {
-            templateParts: select('core').getEntityRecords('postType', 'wp_template_part', { per_page: -1 }) || [],
+            templateParts: select('core').getEntityRecords('postType', 'wp_template_part', { per_page: -1, area: 'mega-menu' }) || [],
         };
     }, []);
 
@@ -184,8 +184,9 @@ registerBlockType('mobile-mega-menu/mega-menu-holder', {
     category: 'layout',
     attributes: {}, // You can add attributes here if you want to control width/padding
     edit: () => (
-        <div style={{
-            padding: '40px 20px',
+      <div style={{
+            fontSize: '12px',
+            padding: '20px 20px',
             border: '2px dashed #007cba',
             backgroundColor: '#f0f7ff',
             textAlign: 'center',

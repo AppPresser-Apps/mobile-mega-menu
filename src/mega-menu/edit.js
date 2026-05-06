@@ -8,21 +8,20 @@ import {
 } from '@wordpress/block-editor';
 import {
 	Button,
-  CheckboxControl,
+	CheckboxControl,
 	SelectControl,
 	TextControl,
 	TextareaControl,
 	ToolbarButton,
 	ToolbarGroup,
 	Spinner,
-	__experimentalToolsPanel as ToolsPanel,
-	__experimentalToolsPanelItem as ToolsPanelItem,
+	PanelBody, // Replaced ToolsPanel with PanelBody for better compatibility
 } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 import apiFetch from '@wordpress/api-fetch';
 import { useState, useRef, useEffect } from '@wordpress/element';
-import { link as linkIcon, external, edit as editIcon, page, category, tag } from '@wordpress/icons';
+import { link as linkIcon, external, pencil as editIcon } from '@wordpress/icons';
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
@@ -34,23 +33,16 @@ const PageIcon = () => (
 
 // ─── MiniLinkPicker ──────────────────────────────────────────────────────────
 
-/**
- * Custom link picker — search box + suggestions list, fully contained.
- * No external width constraints, no popover.
- */
 function MiniLinkPicker( { value, onChange, onRemove } ) {
-	const { url, title: savedTitle } = value || {};
-
+	const { url } = value || {};
 	const [ isEditing, setIsEditing ] = useState( ! url );
-	const [ query, setQuery ]         = useState( '' );
-	const [ isOpen, setIsOpen ]       = useState( false );
-	const inputRef                    = useRef();
-	const wrapRef                     = useRef();
-
-	const [ results, setResults ]     = useState( [] );
+	const [ query, setQuery ] = useState( '' );
+	const [ isOpen, setIsOpen ] = useState( false );
+	const [ results, setResults ] = useState( [] );
 	const [ isLoading, setIsLoading ] = useState( false );
+	const inputRef = useRef();
+	const wrapRef = useRef();
 
-	// Search via REST API using apiFetch
 	useEffect( () => {
 		if ( ! query || query.length < 2 ) {
 			setResults( [] );
@@ -74,7 +66,6 @@ function MiniLinkPicker( { value, onChange, onRemove } ) {
 		return () => { cancelled = true; };
 	}, [ query ] );
 
-	// Close dropdown on outside click
 	useEffect( () => {
 		const handler = ( e ) => {
 			if ( wrapRef.current && ! wrapRef.current.contains( e.target ) ) {
@@ -87,10 +78,10 @@ function MiniLinkPicker( { value, onChange, onRemove } ) {
 
 	const handleSelect = ( item ) => {
 		onChange( {
-			url:   item.url,
-			id:    item.id,
-			type:  item.subtype,
-			kind:  'post-type',
+			url: item.url,
+			id: item.id,
+			type: item.subtype,
+			kind: 'post-type',
 			title: item.title || '',
 		} );
 		setQuery( '' );
@@ -106,35 +97,28 @@ function MiniLinkPicker( { value, onChange, onRemove } ) {
 		setIsEditing( false );
 	};
 
-	const handleRemove = () => {
-		onRemove();
-		setQuery( '' );
-		setIsEditing( true );
-	};
-
-	// ── Display mode ────────────────────────────────────────────────────────
 	if ( ! isEditing && url ) {
 		const displayUrl = url.replace( /^https?:\/\/[^/]+/, '' ) || url;
 		return (
 			<div style={ {
-				display:      'flex',
-				alignItems:   'center',
-				border:       '1px solid #949494',
+				display: 'flex',
+				alignItems: 'center',
+				border: '1px solid #949494',
 				borderRadius: '2px',
-				padding:      '0 8px',
-				height:       '40px',
-				background:   '#fff',
-				gap:          '4px',
-				boxSizing:    'border-box',
-				width:        '100%',
+				padding: '0 8px',
+				height: '40px',
+				background: '#fff',
+				gap: '4px',
+				boxSizing: 'border-box',
+				width: '100%',
 			} }>
 				<span style={ {
-					flex:         1,
-					overflow:     'hidden',
+					flex: 1,
+					overflow: 'hidden',
 					textOverflow: 'ellipsis',
-					whiteSpace:   'nowrap',
-					fontSize:     '13px',
-					color:        '#1e1e1e',
+					whiteSpace: 'nowrap',
+					fontSize: '13px',
+					color: '#1e1e1e',
 				} }>
 					{ displayUrl }
 				</span>
@@ -153,20 +137,18 @@ function MiniLinkPicker( { value, onChange, onRemove } ) {
 		);
 	}
 
-	// ── Edit mode ────────────────────────────────────────────────────────────
 	const isUrl = query.startsWith( 'http' ) || query.startsWith( '/' ) || query.startsWith( '#' );
 
 	return (
 		<div ref={ wrapRef } style={ { position: 'relative', width: '100%', boxSizing: 'border-box' } }>
-			{ /* Search input */ }
 			<div style={ {
-				display:      'flex',
-				alignItems:   'center',
-				border:       '1.5px solid #007cba',
+				display: 'flex',
+				alignItems: 'center',
+				border: '1.5px solid #007cba',
 				borderRadius: '2px',
-				background:   '#fff',
-				boxSizing:    'border-box',
-				width:        '100%',
+				background: '#fff',
+				boxSizing: 'border-box',
+				width: '100%',
 			} }>
 				<input
 					ref={ inputRef }
@@ -187,24 +169,22 @@ function MiniLinkPicker( { value, onChange, onRemove } ) {
 						}
 					} }
 					style={ {
-						flex:       1,
-						border:     'none',
-						outline:    'none',
-						padding:    '0 10px',
-						height:     '40px',
-						fontSize:   '13px',
+						flex: 1,
+						border: 'none',
+						outline: 'none',
+						padding: '0 10px',
+						height: '40px',
+						fontSize: '13px',
 						background: 'transparent',
-						minWidth:   0,
-						boxSizing:  'border-box',
+						minWidth: 0,
+						boxSizing: 'border-box',
 					} }
 				/>
-				{ isLoading && (
-					<div style={ { padding: '0 8px' } }><Spinner /></div>
-				) }
+				{ isLoading && <div style={ { padding: '0 8px' } }><Spinner /></div> }
 				{ url && ! isLoading && (
 					<Button
 						isSmall
-						onClick={ handleRemove }
+						onClick={ onRemove }
 						label={ __( 'Remove link', 'mobile-mega-menu' ) }
 						style={ { flexShrink: 0, padding: '4px 8px', minWidth: 'auto', color: '#757575' } }
 					>
@@ -213,103 +193,69 @@ function MiniLinkPicker( { value, onChange, onRemove } ) {
 				) }
 			</div>
 
-			{ /* Suggestions dropdown */ }
 			{ isOpen && ( results.length > 0 || isUrl ) && (
 				<div style={ {
-					position:     'absolute',
-					top:          '100%',
-					left:         0,
-					right:        0,
-					background:   '#fff',
-					border:       '1px solid #ddd',
-					borderTop:    'none',
+					position: 'absolute',
+					top: '100%',
+					left: 0,
+					right: 0,
+					background: '#fff',
+					border: '1px solid #ddd',
+					borderTop: 'none',
 					borderRadius: '0 0 2px 2px',
-					zIndex:       9999,
-					boxShadow:    '0 4px 8px rgba(0,0,0,.1)',
-					boxSizing:    'border-box',
-					maxHeight:    '240px',
-					overflowY:    'auto',
+					zIndex: 9999,
+					boxShadow: '0 4px 8px rgba(0,0,0,.1)',
+					boxSizing: 'border-box',
+					maxHeight: '240px',
+					overflowY: 'auto',
 				} }>
-
-					{ /* Direct URL entry */ }
 					{ isUrl && (
 						<button
 							onMouseDown={ ( e ) => { e.preventDefault(); handleUrlSubmit(); } }
 							style={ {
-								display:    'flex',
+								display: 'flex',
 								alignItems: 'center',
-								gap:        '10px',
-								width:      '100%',
-								padding:    '8px 12px',
-								border:     'none',
+								gap: '10px',
+								width: '100%',
+								padding: '8px 12px',
+								border: 'none',
 								background: 'none',
-								cursor:     'pointer',
-								textAlign:  'left',
-								fontSize:   '13px',
+								cursor: 'pointer',
+								textAlign: 'left',
+								fontSize: '13px',
 								borderBottom: results.length ? '1px solid #eee' : 'none',
-								boxSizing:  'border-box',
+								boxSizing: 'border-box',
 							} }
-							onMouseEnter={ e => e.currentTarget.style.background = '#f0f0f0' }
-							onMouseLeave={ e => e.currentTarget.style.background = 'none' }
 						>
-							<span style={ { flexShrink: 0, color: '#757575', display: 'flex' } }>
-								{ linkIcon }
-							</span>
-							<span style={ { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }>
-								{ query }
-							</span>
+							<span style={ { flexShrink: 0, color: '#757575', display: 'flex' } }>{ linkIcon }</span>
+							<span style={ { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }>{ query }</span>
 						</button>
 					) }
 
-					{ /* Search results */ }
-					{ results.map( ( item ) => {
-						const itemTitle = item.title || item.subtype || '';
-						const itemPath  = item.url?.replace( /^https?:\/\/[^/]+/, '' ) || '';
-						return (
-							<button
-								key={ item.id }
-								onMouseDown={ ( e ) => { e.preventDefault(); handleSelect( item ); } }
-								style={ {
-									display:    'flex',
-									alignItems: 'center',
-									gap:        '10px',
-									width:      '100%',
-									padding:    '8px 12px',
-									border:     'none',
-									background: 'none',
-									cursor:     'pointer',
-									textAlign:  'left',
-									boxSizing:  'border-box',
-								} }
-								onMouseEnter={ e => e.currentTarget.style.background = '#f0f0f0' }
-								onMouseLeave={ e => e.currentTarget.style.background = 'none' }
-							>
-								<span style={ { flexShrink: 0, color: '#757575', display: 'flex' } }>
-									<PageIcon />
-								</span>
-								<span style={ { display: 'flex', flexDirection: 'column', minWidth: 0 } }>
-									<span style={ {
-										fontWeight:   500,
-										fontSize:     '13px',
-										overflow:     'hidden',
-										textOverflow: 'ellipsis',
-										whiteSpace:   'nowrap',
-									} }
-										dangerouslySetInnerHTML={ { __html: itemTitle } }
-									/>
-									<span style={ {
-										fontSize:     '12px',
-										color:        '#757575',
-										overflow:     'hidden',
-										textOverflow: 'ellipsis',
-										whiteSpace:   'nowrap',
-									} }>
-										{ itemPath }
-									</span>
-								</span>
-							</button>
-						);
-					} ) }
+					{ results.map( ( item ) => (
+						<button
+							key={ item.id }
+							onMouseDown={ ( e ) => { e.preventDefault(); handleSelect( item ); } }
+							style={ {
+								display: 'flex',
+								alignItems: 'center',
+								gap: '10px',
+								width: '100%',
+								padding: '8px 12px',
+								border: 'none',
+								background: 'none',
+								cursor: 'pointer',
+								textAlign: 'left',
+								boxSizing: 'border-box',
+							} }
+						>
+							<span style={ { flexShrink: 0, color: '#757575', display: 'flex' } }><PageIcon /></span>
+							<span style={ { display: 'flex', flexDirection: 'column', minWidth: 0 } }>
+								<span style={ { fontWeight: 500, fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } } dangerouslySetInnerHTML={ { __html: item.title } } />
+								<span style={ { fontSize: '12px', color: '#757575', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }>{ item.url?.replace( /^https?:\/\/[^/]+/, '' ) }</span>
+							</span>
+						</button>
+					) ) }
 				</div>
 			) }
 		</div>
@@ -328,8 +274,10 @@ export default function Edit( { attributes, setAttributes } ) {
 		title,
 		type,
 		kind,
-    id,
+		id,
 		customMenuSlug,
+		customMenuBackgroundColor,
+		showSubmenuIcon
 	} = attributes;
 
 	const blockProps = useBlockProps( {
@@ -337,23 +285,19 @@ export default function Edit( { attributes, setAttributes } ) {
 	} );
 
 	const homeUrl = useSelect(
-		( select ) =>
-			select( coreStore ).getEntityRecord( 'root', '__unstableBase' )?.home,
+		( select ) => select( coreStore ).getEntityRecord( 'root', '__unstableBase' )?.home,
 		[]
 	);
 
 	const isViewableUrl = !! url && ! url.startsWith( '#' ) && ! url.startsWith( './' );
 	const viewUrl = isViewableUrl && url.startsWith( '/' ) && homeUrl ? homeUrl + url : url;
 
-	const { templateParts } = useSelect( ( select ) => {
-    // We pass the 'area' query parameter to the REST API call
-    return {
-        templateParts: select( coreStore ).getEntityRecords( 'postType', 'wp_template_part', {
-            per_page: -1,
-            area: 'mega-menu' // Replace 'mega-menu' with the actual slug you registered
-        } ) || [],
-    };
-}, [] );
+	const { templateParts } = useSelect( ( select ) => ( {
+		templateParts: select( coreStore ).getEntityRecords( 'postType', 'wp_template_part', {
+			per_page: -1,
+			area: 'mega-menu'
+		} ) || [],
+	} ), [] );
 
 	const templateOptions = [
 		{ label: __( 'None', 'mobile-mega-menu' ), value: '' },
@@ -361,34 +305,30 @@ export default function Edit( { attributes, setAttributes } ) {
 			label: part.title?.rendered || part.slug,
 			value: part.slug,
 		} ) ),
-  ];
+	];
+
+	const selectedPart = templateParts.find( ( part ) => part.slug === customMenuSlug );
+	const editTemplateUrl = customMenuSlug && selectedPart
+		? `${ homeUrl }/wp-admin/site-editor.php?p=%2Fwp_template_part%2F${ encodeURIComponent( selectedPart.theme ) }%2F%2F${ customMenuSlug }&canvas=edit`
+		: null;
 
 	const handleLinkChange = ( nextValue ) => {
 		setAttributes( {
-			url:          nextValue?.url ?? '',
-			id:           nextValue?.id ?? undefined,
-			type:         nextValue?.type ?? undefined,
-			kind:         nextValue?.kind ?? undefined,
+			url: nextValue?.url ?? '',
+			id: nextValue?.id ?? undefined,
+			type: nextValue?.type ?? undefined,
+			kind: nextValue?.kind ?? undefined,
 			opensInNewTab: nextValue?.opensInNewTab ?? opensInNewTab,
 		} );
 	};
 
-	const handleLinkRemove = () => {
-		setAttributes( { url: undefined, id: undefined, type: undefined, kind: undefined } );
-  };
-
 	const handleMouseEnter = () => {
-    if (!customMenuSlug) return;
-
-    // Dispatch event for the editor preview
-    const event = new CustomEvent('wp-mega-menu-preview', {
-        detail: {
-            slug: customMenuSlug,
-            backgroundColor: customMenuBackgroundColor
-        }
-    });
-    window.dispatchEvent(event);
-};
+		if ( ! customMenuSlug ) return;
+		const event = new CustomEvent( 'wp-mega-menu-preview', {
+			detail: { slug: customMenuSlug, backgroundColor: customMenuBackgroundColor }
+		} );
+		window.dispatchEvent( event );
+	};
 
 	return (
 		<>
@@ -403,143 +343,66 @@ export default function Edit( { attributes, setAttributes } ) {
 			</BlockControls>
 
 			<InspectorControls>
-				<ToolsPanel
-					label={ __( 'Settings', 'mobile-mega-menu' ) }
-					resetAll={ () => setAttributes( {
-						label: '', url: '', description: '', rel: '',
-						opensInNewTab: false, id: undefined, type: undefined, kind: undefined,
-					} ) }
-				>
-					{ /* Text */ }
-					<ToolsPanelItem
-						hasValue={ () => !! label }
+				{ /* Use PanelBody instead of ToolsPanel to avoid blocking Core Styles */ }
+				<PanelBody title={ __( 'Mega Menu Settings', 'mobile-mega-menu' ) }>
+					<TextControl
 						label={ __( 'Text', 'mobile-mega-menu' ) }
-						onDeselect={ () => setAttributes( { label: '' } ) }
-						isShownByDefault
-					>
-						<TextControl
-							__next40pxDefaultSize
-							label={ __( 'Text', 'mobile-mega-menu' ) }
-							value={ label || '' }
-							onChange={ ( val ) => setAttributes( { label: val } ) }
-							autoComplete="off"
+						value={ label || '' }
+						onChange={ ( val ) => setAttributes( { label: val } ) }
+						autoComplete="off"
+					/>
+
+					<div style={ { marginBottom: '16px' } }>
+						<p style={ { fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', marginBottom: '8px' } }>
+							{ __( 'LINK', 'mobile-mega-menu' ) }
+						</p>
+						<MiniLinkPicker
+							value={ { url, opensInNewTab, title, type, kind, id } }
+							onChange={ handleLinkChange }
+							onRemove={ () => setAttributes( { url: undefined, id: undefined, type: undefined, kind: undefined } ) }
 						/>
-					</ToolsPanelItem>
+					</div>
 
-					{ /* Link */ }
-					<ToolsPanelItem
-						hasValue={ () => !! url }
-						label={ __( 'Link', 'mobile-mega-menu' ) }
-						onDeselect={ handleLinkRemove }
-						isShownByDefault
-					>
-						<div style={ { width: '100%', boxSizing: 'border-box' } }>
-							<p style={ {
-								fontSize:      '11px',
-								fontWeight:    500,
-								textTransform: 'uppercase',
-								marginBottom:  '8px',
-								marginTop:     0,
-							} }>
-								{ __( 'LINK', 'mobile-mega-menu' ) }
-							</p>
-							<MiniLinkPicker
-								value={ { url, opensInNewTab, title, type, kind, id } }
-								onChange={ handleLinkChange }
-								onRemove={ handleLinkRemove }
-							/>
-							{ url && (
-								<p style={ {
-									fontSize:   '12px',
-									color:      '#757575',
-									marginTop:  '8px',
-									marginBottom: 0,
-								} }>
-									{ __( 'Synced with the selected page.', 'mobile-mega-menu' ) }
-								</p>
-							) }
-						</div>
-					</ToolsPanelItem>
-
-					{ /* Open in new tab */ }
-					<ToolsPanelItem
-						hasValue={ () => !! opensInNewTab }
+					<CheckboxControl
 						label={ __( 'Open in new tab', 'mobile-mega-menu' ) }
-						onDeselect={ () => setAttributes( { opensInNewTab: false } ) }
-						isShownByDefault
-					>
-						<CheckboxControl
-							label={ __( 'Open in new tab', 'mobile-mega-menu' ) }
-							checked={ opensInNewTab }
-							onChange={ ( val ) => setAttributes( { opensInNewTab: val } ) }
-						/>
-					</ToolsPanelItem>
+						checked={ opensInNewTab }
+						onChange={ ( val ) => setAttributes( { opensInNewTab: val } ) }
+					/>
 
-					{ /* View button */ }
-					{ isViewableUrl && (
-						<Button
-							variant="secondary"
-							href={ viewUrl }
-							target="_blank"
-							icon={ external }
-							iconPosition="right"
-							__next40pxDefaultSize
-							className="navigation-link-to__action-button"
-						>
-							{ __( 'View', 'mobile-mega-menu' ) }
+					<CheckboxControl
+						label={ __( 'Show Submenu Icon', 'mobile-mega-menu' ) }
+						checked={ showSubmenuIcon }
+						onChange={ ( val ) => setAttributes( { showSubmenuIcon: val } ) }
+					/>
+
+					<SelectControl
+						label={ __( 'Mega Menu Template', 'mobile-mega-menu' ) }
+						value={ customMenuSlug || '' }
+						options={ templateOptions }
+						onChange={ ( val ) => setAttributes( { customMenuSlug: val } ) }
+					/>
+
+					{ editTemplateUrl && (
+						<Button href={ editTemplateUrl } target="_blank" icon={ editIcon } isSmall isLink>
+							{ __( 'Edit Template', 'mobile-mega-menu' ) }
 						</Button>
 					) }
 
-					{ /* Description */ }
-					<ToolsPanelItem
-						hasValue={ () => !! description }
+					<TextareaControl
 						label={ __( 'Description', 'mobile-mega-menu' ) }
-						onDeselect={ () => setAttributes( { description: '' } ) }
-						isShownByDefault
-					>
-						<TextareaControl
-							label={ __( 'Description', 'mobile-mega-menu' ) }
-							value={ description || '' }
-							onChange={ ( val ) => setAttributes( { description: val } ) }
-							help={ __( 'The description will be displayed in the menu if the current theme supports it.', 'mobile-mega-menu' ) }
-						/>
-					</ToolsPanelItem>
+						value={ description || '' }
+						onChange={ ( val ) => setAttributes( { description: val } ) }
+					/>
 
-					{ /* Rel */ }
-					<ToolsPanelItem
-						hasValue={ () => !! rel }
+					<TextControl
 						label={ __( 'Rel attribute', 'mobile-mega-menu' ) }
-						onDeselect={ () => setAttributes( { rel: '' } ) }
-						isShownByDefault
-					>
-						<TextControl
-							__next40pxDefaultSize
-							label={ __( 'Rel attribute', 'mobile-mega-menu' ) }
-							value={ rel || '' }
-							onChange={ ( val ) => setAttributes( { rel: val } ) }
-							autoComplete="off"
-							help={ __( 'The relationship of the linked URL as space-separated link types.', 'mobile-mega-menu' ) }
-						/>
-          </ToolsPanelItem>
-
-        		{ /* Template Part */ }
-					<ToolsPanelItem
-						hasValue={ () => !! customMenuSlug }
-						label={ __( 'Template Part', 'mobile-mega-menu' ) }
-						onDeselect={ () => setAttributes( { customMenuSlug: '' } ) }
-						isShownByDefault
-					>
-						<SelectControl
-							label={ __( 'Mega Menu Template', 'mobile-mega-menu' ) }
-							value={ customMenuSlug || '' }
-							options={ templateOptions }
-							onChange={ ( val ) => setAttributes( { customMenuSlug: val } ) }
-						/>
-					</ToolsPanelItem>
-				</ToolsPanel>
+						value={ rel || '' }
+						onChange={ ( val ) => setAttributes( { rel: val } ) }
+					/>
+				</PanelBody>
 			</InspectorControls>
 
-			<li { ...blockProps } onMouseEnter={handleMouseEnter}>
+			<li { ...blockProps } onMouseEnter={ handleMouseEnter }>
 				<div className="wp-block-navigation-item__content">
 					<RichText
 						tagName="span"
@@ -550,16 +413,13 @@ export default function Edit( { attributes, setAttributes } ) {
 						allowedFormats={ [ 'core/bold', 'core/italic' ] }
 					/>
 				</div>
-				<button
-					aria-label={ __( 'Submenu', 'mobile-mega-menu' ) }
-					className="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle"
-					aria-expanded="false"
-					onClick={ ( e ) => e.preventDefault() }
-				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false">
-						<path d="M1.50002 4L6.00002 8L10.5 4" stroke="currentColor" strokeWidth="1.5"></path>
-					</svg>
-				</button>
+				{ showSubmenuIcon && (
+					<button className="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle">
+						<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+							<path d="M1.50002 4L6.00002 8L10.5 4" stroke="currentColor" strokeWidth="1.5"></path>
+						</svg>
+					</button>
+				) }
 				<ul className="wp-block-navigation__submenu-container">
 					<InnerBlocks renderAppender={ InnerBlocks.ButtonBlockAppender } />
 				</ul>

@@ -1,3 +1,7 @@
 .mega-menu-holder .is-active {
     display: block !important;
 }
+
+.right-padding-0 {
+    padding-right: 0 !important;
+}

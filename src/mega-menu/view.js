@@ -11,10 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   };
 
-  // 2. Clear menus when hovering ANY menu item (prevents sticking)
+  // 2. Clear menus when hovering menu items that are NOT inside a mega menu (data-menu-slug)
   allMenuItems.forEach(item => {
       item.addEventListener('mouseenter', () => {
-          closeAllMenus();
+          // Only close if this item is not inside a data-menu-slug container
+          if (!item.closest('[data-menu-slug]')) {
+              closeAllMenus();
+          }
       });
   });
 

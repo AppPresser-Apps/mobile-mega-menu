@@ -8,8 +8,9 @@ export default function save( { attributes } ) {
 		opensInNewTab,
 		rel,
 		title,
-		customMenuSlug, // Extract the slug
-		customMenuBackgroundColor // Extract background if needed
+		customMenuSlug,
+    customMenuBackgroundColor,
+    showSubmenuIcon
 	} = attributes;
 
 	const blockProps = useBlockProps.save( {
@@ -52,16 +53,19 @@ export default function save( { attributes } ) {
 						value={ label }
 					/>
 				</div>
-			) }
-			<button
-				aria-label={ label ? sprintf( __( '%s submenu' ), label ) : __( 'Submenu' ) }
-				className="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle"
-				aria-expanded="false"
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false">
-					<path d="M1.50002 4L6.00002 8L10.5 4" stroke="currentColor" strokeWidth="1.5"></path>
-				</svg>
-			</button>
+      )}
+
+			{showSubmenuIcon && (
+				<button
+					aria-label={ label ? sprintf( __( '%s submenu' ), label ) : __( 'Submenu' ) }
+					className="wp-block-navigation__submenu-icon wp-block-navigation-submenu__toggle"
+					aria-expanded="false"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" focusable="false">
+						<path d="M1.50002 4L6.00002 8L10.5 4" stroke="currentColor" strokeWidth="1.5"></path>
+					</svg>
+				</button>
+			)}
 			<ul className="wp-block-navigation__submenu-container">
 				<InnerBlocks.Content />
 			</ul>

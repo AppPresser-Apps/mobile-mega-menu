@@ -44,6 +44,10 @@
     "isTopLevelItem": {
       "type": "boolean"
     },
+    "showSubmenuIcon": {
+      "type": "boolean",
+      "default": true
+    },
     "anchor": {
       "type": "string"
     },
@@ -87,6 +91,12 @@
       "wide",
       "full"
     ],
+    "__experimentalBorder": {
+      "radius": true,
+      "__experimentalDefaultControls": {
+        "radius": true
+      }
+    },
     "color": {
       "gradients": true,
       "link": true,
@@ -117,6 +127,17 @@
       "__experimentalDefaultControls": {
         "margin": true,
         "padding": true
+      }
+    },
+    "border": {
+      "color": true,
+      "radius": true,
+      "style": true,
+      "width": true,
+      "__experimentalDefaultControls": {
+        "color": true,
+        "radius": true,
+        "width": true
       }
     }
   },

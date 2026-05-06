@@ -47,6 +47,10 @@ return array(
 			'isTopLevelItem' => array(
 				'type' => 'boolean'
 			),
+			'showSubmenuIcon' => array(
+				'type' => 'boolean',
+				'default' => true
+			),
 			'anchor' => array(
 				'type' => 'string'
 			),
@@ -90,6 +94,12 @@ return array(
 				'wide',
 				'full'
 			),
+			'__experimentalBorder' => array(
+				'radius' => true,
+				'__experimentalDefaultControls' => array(
+					'radius' => true
+				)
+			),
 			'color' => array(
 				'gradients' => true,
 				'link' => true,
@@ -120,6 +130,17 @@ return array(
 				'__experimentalDefaultControls' => array(
 					'margin' => true,
 					'padding' => true
+				)
+			),
+			'border' => array(
+				'color' => true,
+				'radius' => true,
+				'style' => true,
+				'width' => true,
+				'__experimentalDefaultControls' => array(
+					'color' => true,
+					'radius' => true,
+					'width' => true
 				)
 			)
 		),
